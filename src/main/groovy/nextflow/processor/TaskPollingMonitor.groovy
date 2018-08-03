@@ -396,12 +396,14 @@ class TaskPollingMonitor implements TaskMonitor {
 
             // check all running tasks for termination
             checkAllTasks()
+            log.trace "After check all running tasks"
 
             if( (session.isTerminated() && runningQueue.size()==0 && pendingQueue.size()==0) || session.isAborted() ) {
                 break
             }
 
             await(time)
+            log.trace "After await running tasks"
 
             if( session.isAborted() ) {
                 break
@@ -411,6 +413,7 @@ class TaskPollingMonitor implements TaskMonitor {
             Throttle.after(dumpInterval) {
                 dumpPendingTasks()
             }
+            log.trace "After throttle dumpInterval=$dumpInterval"
         }
     }
 
@@ -468,6 +471,7 @@ class TaskPollingMonitor implements TaskMonitor {
      */
     protected void await( long time ) {
         def delta = this.pollIntervalMillis - (System.currentTimeMillis() - time)
+        log.trace "Await pollIntervalMillis=$pollIntervalMillis; delta=$delta"
         if( delta <= 0 )
             return
 
