@@ -21,9 +21,12 @@
 package nextflow.util
 
 import java.nio.file.Files
+import java.nio.file.Paths
 
 import com.google.common.hash.Hashing
 import spock.lang.Specification
+
+import nextflow.file.FileHolder
 
 /**
  *
@@ -152,5 +155,19 @@ class CacheHelperTest extends Specification {
 
     }
 
+
+    def 'should hash bag' () {
+
+        given:
+        def path = Paths.get('/some/file/foo')
+        def bag = new HashSet()
+        bag << new FileHolder(path)
+
+        when:
+        def h = CacheHelper.hasher(bag)
+        then:
+        h.hash().toString() == 'dc025bc72adf52df148dbe6cd96fd8e3'
+
+    }
 
 }

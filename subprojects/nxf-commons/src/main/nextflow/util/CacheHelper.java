@@ -212,6 +212,14 @@ public class CacheHelper {
                 hasher = hasher.putLong( attrs.lastModifiedTime().toMillis() );
             }
         }
+
+        if( log.isTraceEnabled() ) {
+            String path = file.toAbsolutePath().toString();
+            long size = attrs != null ? attrs.size() : -1;
+            long ts = attrs != null && attrs.lastModifiedTime() != null ? attrs.lastModifiedTime().toMillis() : -1;
+            log.trace("Hash metadata file={}; size={}; lastmodified={}", path, size, ts);
+        }
+
         return hasher;
     }
 
@@ -258,6 +266,9 @@ public class CacheHelper {
         byte[] resultBytes = new byte[HASH_BYTES];
         for (Object item : collection) {
             byte[] nextBytes = CacheHelper.hasher(item,mode).hash().asBytes();
+            if( log.isTraceEnabled() )
+                log.trace("Collection item hash={} value={}", HashCode.fromBytes(nextBytes), item);
+
             if( nextBytes.length != resultBytes.length )
                 throw new IllegalStateException("All hash codes must have the same bit length");
 
@@ -266,8 +277,9 @@ public class CacheHelper {
             }
         }
 
+        if( log.isTraceEnabled() )
+            log.trace("Collection result bytes={}", HashCode.fromBytes(resultBytes));
         return hasher.putBytes(resultBytes);
-
     }
 
 }
